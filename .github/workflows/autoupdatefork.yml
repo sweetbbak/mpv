@@ -1,0 +1,38 @@
+#更新fork
+name: update fork
+
+on: 
+   workflow_dispatch:
+   schedule:
+     - cron: '50 7 * * *' #设置定时任务
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.repository.owner.id == github.event.sender.id && github.actor != 'mpv-player' }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.WORKFLOW_TOKEN }}
+    - name: Install git
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install git
+    - name: Set env
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+    - name: Update fork master
+      run: |
+        git remote add upstream https://github.com/mpv-player/mpv.git
+        git remote -v
+        git fetch upstream
+        git checkout master || git checkout -b master origin/master
+        git merge --strategy-option=ours upstream/master
+        git push -f origin master
+    - name: Update fork patch
+      run: |
+        git checkout patch || git checkout -b patch origin/patch
+        git rebase --strategy-option=ours upstream/master
+        git push -f origin patch
