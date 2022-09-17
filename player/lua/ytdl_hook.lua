@@ -9,6 +9,7 @@ local o = {
     all_formats = false,
     force_all_formats = true,
     ytdl_path = "",
+    sub_format = "",
 }
 
 local ytdl = {
@@ -546,7 +547,7 @@ local function add_single_video(json)
     local streamurl = ""
     local format_info = ""
     local max_bitrate = 0
-    local requested_formats = json["requested_formats"] or json["requested_downloads"]
+    local requested_formats = json["requested_formats"]
     local all_formats = json["formats"]
     local has_requested_formats = requested_formats and #requested_formats > 0
     local http_headers = has_requested_formats
@@ -771,14 +772,14 @@ function run_ytdl_hook(url)
     end
 
     local format = mp.get_property("options/ytdl-format")
+    local sub_format = o.sub_format
     local raw_options = mp.get_property_native("options/ytdl-raw-options")
     local allsubs = true
     local proxy = nil
     local use_playlist = false
 
     local command = {
-        ytdl.path, "--no-warnings", "-J", "--flat-playlist",
-        "--sub-format", "ass/srt/best"
+        ytdl.path, "--no-warnings", "-J", "--flat-playlist"
     }
 
     -- Checks if video option is "no", change format accordingly,
@@ -795,6 +796,15 @@ function run_ytdl_hook(url)
     if format ~= "ytdl" then
         table.insert(command, "--format")
         table.insert(command, format)
+    end
+    
+    if (sub_format == "") then
+        format = "ass/srt/best"
+    end
+
+    if sub_format ~= "ytdl" then
+        table.insert(command, "--sub-format")
+        table.insert(command, sub_format)
     end
 
     for param, arg in pairs(raw_options) do
@@ -857,6 +867,7 @@ function run_ytdl_hook(url)
         end
 
         ytdl.searched = true
+        mp.commandv('script-message', 'ytdl_path', ytdl.path)
     end
 
     if result.killed_by_us then
@@ -865,6 +876,7 @@ function run_ytdl_hook(url)
 
     local json = result.stdout
     local parse_err = nil
+    local json_string = json
 
     if result.status ~= 0 or json == "" then
         json = nil
@@ -975,6 +987,8 @@ function run_ytdl_hook(url)
         elseif self_redirecting_url and #json.entries == 1 then
             msg.verbose("Playlist with single entry detected.")
             add_single_video(json.entries[1])
+            local json_string = utils.format_json(json.entries[1])
+            mp.commandv('script-message', 'ytdl_json', url, json_string)
         else
             local playlist_index = parse_yt_playlist(url, json)
             local playlist = {"#EXTM3U"}
@@ -1021,6 +1035,7 @@ function run_ytdl_hook(url)
 
     else -- probably a video
         add_single_video(json)
+        mp.commandv('script-message', 'ytdl_json', url, json_string)
     end
     msg.debug('script running time: '..os.clock()-start_time..' seconds')
 end
