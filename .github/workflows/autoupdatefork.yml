@@ -1,24 +1,20 @@
 #更新fork
 name: update fork
 
-on: 
+on:
+   repository_dispatch:
    workflow_dispatch:
    schedule:
      - cron: '50 7 * * *' #设置定时任务
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: ${{ github.event.repository.owner.id == github.event.sender.id && github.actor != 'mpv-player' }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
         token: ${{ secrets.WORKFLOW_TOKEN }}
-    - name: Install git
-      run: |
-        sudo apt-get update
-        sudo apt-get -y install git
     - name: Set env
       run: |
         git config user.name "github-actions[bot]"
