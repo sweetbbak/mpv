@@ -108,6 +108,7 @@ struct mp_subtitle_opts {
     char **ass_force_style_list;
     char *ass_styles_file;
     int ass_style_override;
+    bool sec_sub_override;
     int ass_hinting;
     int ass_shaper;
     bool ass_justify;
