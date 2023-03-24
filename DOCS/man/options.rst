@@ -2505,6 +2505,33 @@ Subtitles
     a subtitle script with another video file. The ``--sub-ass-override``
     option doesn't affect how this option is interpreted.
 
+``--sub-ass-feature-bidi-brackets=<yes|no>``
+    Enable Unicode 6.3+ bracket matching when applying the Unicode Bidirectional
+    Algorithm for text subtitle and SSA/ASS files.
+    This is incompatible with VSFilter.
+
+    Disabled by default.
+
+``--sub-ass-feature-whole-text-layout=<yes|no>``
+    Apply bidi, shaping and \\fay to the entire unsplit event text for SSA/ASS
+    files. This is incompatible with VSFilter.
+
+    Disabled by default.
+
+``--sub-ass-feature-wrap-unicode=<yes|no>``
+    Break lines according to the Unicode Line Breaking Algorithm.If the track
+    language is set, some additional language-specific tweaks may be applied.
+    Setting this enables more breaking opportunities compared to classic ASS.
+    However, it is still possible for long words without breaking opportunities
+    to cause overfull lines. This is incompatible with VSFilter.
+
+    Enabled by default.
+
+    .. note::
+
+        This works for text subtitle and SSA/ASS files only. libass need compiled
+        with libunibreak support (if not, it behaves like ``no``).
+
 ``--stretch-dvd-subs=<yes|no>``
     Stretch DVD subtitles when playing anamorphic videos for better looking
     fonts on badly mastered DVDs. This switch has no effect when the

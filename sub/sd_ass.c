@@ -444,8 +444,17 @@ static void configure_ass(struct sd *sd, struct mp_osd_res *dim,
     ass_set_font_scale(priv, set_font_scale);
     ass_set_hinting(priv, set_hinting);
     ass_set_line_spacing(priv, set_line_spacing);
+
+#if LIBASS_VERSION >= 0x01400002
+    if (opts->ass_feature_bidi_brackets)
+        ass_track_set_feature(track, ASS_FEATURE_BIDI_BRACKETS, 1);
+#endif
+#if LIBASS_VERSION >= 0x01600000
+    if (opts->ass_feature_whole_text_layout)
+        ass_track_set_feature(track, ASS_FEATURE_WHOLE_TEXT_LAYOUT, 1);
+#endif
 #if LIBASS_VERSION >= 0x01600010
-    if (converted)
+    if (converted || opts->ass_feature_wrap_unicode)
         ass_track_set_feature(track, ASS_FEATURE_WRAP_UNICODE, 1);
 #endif
 #if LIBASS_VERSION >= 0x01700000
