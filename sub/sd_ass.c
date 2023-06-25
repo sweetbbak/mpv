@@ -216,10 +216,14 @@ static void assobjects_init(struct sd *sd)
 
     ctx->ass_track = ass_new_track(ctx->ass_library);
     ctx->ass_track->track_type = TRACK_TYPE_ASS;
+    if (sd->locale)
+        ctx->ass_track->Language = strdup(sd->locale);
 
     ctx->shadow_track = ass_new_track(ctx->ass_library);
     ctx->shadow_track->PlayResX = 384;
     ctx->shadow_track->PlayResY = 288;
+    if (sd->locale)
+        ctx->shadow_track->Language = strdup(sd->locale);
     mp_ass_add_default_styles(ctx->shadow_track, opts);
 
     char *extradata = sd->codec->extradata;

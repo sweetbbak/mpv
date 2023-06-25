@@ -71,6 +71,8 @@ struct dec_sub {
     struct demux_packet *new_segment;
 
     bool forced_only_def;
+
+    char *locale;
 };
 
 static void update_subtitle_speed(struct dec_sub *sub)
@@ -145,6 +147,7 @@ static struct sd *init_decoder(struct dec_sub *sub)
             .codec = sub->codec,
             .preload_ok = true,
             .forced_only_def = sub->forced_only_def,
+            .locale = sub->locale,
         };
 
         if (sd->driver->init(sd) >= 0)
@@ -183,6 +186,7 @@ struct dec_sub *sub_create(struct mpv_global *global, struct track *track,
         .start = MP_NOPTS_VALUE,
         .end = MP_NOPTS_VALUE,
         .forced_only_def = track->forced_only_def,
+        .locale = track->lang ? talloc_strdup(sub, track->lang) : NULL,
     };
     sub->opts = sub->opts_cache->opts;
     mpthread_mutex_init_recursive(&sub->lock);

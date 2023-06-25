@@ -26,6 +26,8 @@ struct sd {
     bool preload_ok;
 
     bool forced_only_def;
+
+    char *locale;
 };
 
 struct sd_functions {
