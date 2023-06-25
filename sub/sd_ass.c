@@ -448,6 +448,22 @@ static void configure_ass(struct sd *sd, struct mp_osd_res *dim,
     if (converted)
         ass_track_set_feature(track, ASS_FEATURE_WRAP_UNICODE, 1);
 #endif
+#if LIBASS_VERSION >= 0x01700000
+    if (converted) {
+        bool override_playres = true;
+        char **ass_force_style_list = opts->ass_force_style_list;
+        for (int i = 0; ass_force_style_list && ass_force_style_list[i]; i++) {
+            if (bstr_find0(bstr0(ass_force_style_list[i]), "PlayResX") >= 0)
+                override_playres = false;
+        }
+        if (override_playres) {
+            int vidw = dim->w - (dim->ml + dim->mr);
+            int vidh = dim->h - (dim->mt + dim->mb);
+            track->PlayResX = track->PlayResY * (double)vidw / vidh;
+            MP_MSG(sd, MSGL_DEBUG, "setting PlayResX to %d\n", track->PlayResX);
+        }
+    }
+#endif
 }
 
 static bool has_overrides(char *s)
