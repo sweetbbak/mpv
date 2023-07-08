@@ -1896,7 +1896,12 @@ static void update_render_options(struct vo *vo)
     p->sigmoid.center = opts->sigmoid_center;
     p->sigmoid.slope = opts->sigmoid_slope;
 
+#if PL_API_VER >= 292
+    p->peak_detect = pl_peak_detect_high_quality_params;
+#else
     p->peak_detect = pl_peak_detect_default_params;
+#endif
+
     p->peak_detect.smoothing_period = opts->tone_map.decay_rate;
     p->peak_detect.scene_threshold_low = opts->tone_map.scene_threshold_low;
     p->peak_detect.scene_threshold_high = opts->tone_map.scene_threshold_high;
@@ -1959,7 +1964,12 @@ static void update_render_options(struct vo *vo)
     };
 #endif
 
+#if PL_API_VER >= 292
+    p->color_map = pl_color_map_high_quality_params;
+#else
     p->color_map = pl_color_map_default_params;
+#endif
+
     p->color_map.tone_mapping_function = tone_map_funs[opts->tone_map.curve];
     p->color_map.tone_mapping_param = opts->tone_map.curve_param;
     p->color_map.inverse_tone_mapping = opts->tone_map.inverse;
